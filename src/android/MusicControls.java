@@ -168,38 +168,44 @@ public class MusicControls extends CordovaPlugin {
 
 		
 		if (action.equals("create")) {
-			final MusicControlsInfos infos = new MusicControlsInfos(args);
-			 final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+            try{
+                final MusicControlsInfos infos = new MusicControlsInfos(args);
+                final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
 
 
-			this.cordova.getThreadPool().execute(new Runnable() {
-				public void run() {
-					notification.updateNotification(infos);
-					
-					// track title
-					metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, infos.track);
-					// artists
-					metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, infos.artist);
-					//album
-					metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, infos.album);
+                this.cordova.getThreadPool().execute(new Runnable() {
+                    public void run() {
+                        notification.updateNotification(infos);
+                        
+                        // track title
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, infos.track);
+                        // artists
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, infos.artist);
+                        //album
+                        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, infos.album);
 
-					Bitmap art = getBitmapCover(infos.cover);
-					if(art != null){
-						metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art);
-						metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, art);
+                        Bitmap art = getBitmapCover(infos.cover);
+                        if(art != null){
+                            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art);
+                            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, art);
 
-					}
+                        }
 
-					mediaSessionCompat.setMetadata(metadataBuilder.build());
+                        mediaSessionCompat.setMetadata(metadataBuilder.build());
 
-					if(infos.isPlaying)
-						setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-					else
-						setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                        if(infos.isPlaying)
+                            setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                        else
+                            setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
 
-					callbackContext.success("success");
-				}
-			});
+                        callbackContext.success("success");
+                    }
+                });
+            }
+			
+            catch(Exception e){
+                callbackContext.error(e.getMessage());
+            }
 		}
 		else if (action.equals("updateIsPlaying")){
 			final JSONObject params = args.getJSONObject(0);
