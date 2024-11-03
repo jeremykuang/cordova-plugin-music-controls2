@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.content.ContextCompat
 
 import android.media.session.MediaSession.Token;
 
@@ -57,7 +58,7 @@ public class MusicControls extends CordovaPlugin {
 	private MediaSessionCallback mMediaSessionCallback = new MediaSessionCallback();
 
 	private void registerBroadcaster(MusicControlsBroadcastReceiver mMessageReceiver){
-		final Context context = this.cordova.getActivity().getApplicationContext();
+		/*final Context context = this.cordova.getActivity().getApplicationContext();
 		context.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-previous"));
 		context.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-pause"));
 		context.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-play"));
@@ -69,7 +70,22 @@ public class MusicControls extends CordovaPlugin {
 		context.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
 		
 		// Listen for bluetooth connection state changes
-		context.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter(android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED));
+		context.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter(android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED));*/
+
+        int receiverFlags = ContextCompat.RECEIVER_EXPORTED;
+
+        ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-previous"), receiverFlags);
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-pause"), receiverFlags);
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-play"), receiverFlags);
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-next"), receiverFlags);
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-media-button"), receiverFlags);
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter("music-controls-destroy"), receiverFlags);
+
+		// Listen for headset plug/unplug
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG), receiverFlags);
+		
+		// Listen for bluetooth connection state changes
+		ContextCompat.registerReceiver((BroadcastReceiver)mMessageReceiver, new IntentFilter(android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED), receiverFlags);
 	}
 
 	// Register pendingIntent for broacast
